@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
+const { nextTick } = require("process");
 
 //initialize project.  Asks user questions in the terminal
 function init() {
@@ -35,6 +36,53 @@ function init() {
         addEmployee();
       } else {
         updateEmployeeRole();
+      }
+    });
+}
+
+function viewDepartments() {
+  next();
+}
+
+function viewRoles() {
+  next();
+}
+
+function viewEmployees() {
+  next();
+}
+
+function addDepartment() {
+  next();
+}
+
+function addRole() {
+  next();
+}
+
+function addEmployee() {
+  next();
+}
+
+function updateEmployeeRole() {
+  next();
+}
+
+function next() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "task",
+        message: "What would you like to do next?",
+        choices: ["start new task", "quit"],
+      },
+    ])
+    .then((response) => {
+      if (response.task === "start new task") {
+        init();
+      } else {
+        //end
       }
     });
 }
