@@ -21,7 +21,6 @@ CREATE TABLE employees (
   l_name VARCHAR(30) NOT NULL,
   role_id INT, --fk reference employee role
   manager_id INT -- hold reference to other employee.  can be null.  
-
 );
 
 
