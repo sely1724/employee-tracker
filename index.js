@@ -2,17 +2,6 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const mysql = require("mysql2");
-//const schema = require("./db/schema.sql");
-
-//connection pool example from https://www.npmjs.com/package/mysql2?activeTab=readme
-// const pool = mysql.createPool({
-//     host: 'localhost',
-//     user: 'root',
-//     database: 'test',
-//     waitForConnections: true,
-//     connectionLimit: 10,
-//     queueLimit: 0
-//   });
 
 const db = mysql.createConnection(
   {
@@ -21,12 +10,8 @@ const db = mysql.createConnection(
     password: "wZ(k3TmrlOWEForpDiQ[",
     database: "employee_management_system",
   }
-  //console.log(`Connected to the ${db.database} database.`)
+  //console.log(`Connected to the employee_management_system database.`)
 );
-
-// db.query(`select * from departments`, function (err, results) {
-//   console.log(results);
-// });
 
 //initialize project.  Asks user questions in the terminal
 function init() {
@@ -67,22 +52,47 @@ function init() {
 }
 
 function viewDepartments() {
-  db.query("select * from departments", function (err, results) {
+  db.query(`select * from departments`, function (err, results) {
     console.log(results);
   });
   next();
 }
 
 function viewRoles() {
+  db.query(`select * from roles`, function (err, results) {
+    console.log(results);
+  });
   next();
 }
 
 function viewEmployees() {
+  db.query(`select * from employees`, function (err, results) {
+    console.log(results);
+  });
   next();
 }
 
 function addDepartment() {
-  next();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Please add the department's name",
+        name: "addDepartmentName",
+      },
+    ])
+    .then((response) => {
+      const query = `INSERT INTO departments (department_name) VALUES (?);`;
+      //https://www.geeksforgeeks.org/node-js-mysql-insert-into-table/
+      db.query(query, response.addDepartmentName, (err, response) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Ok");
+        }
+      });
+      next();
+    });
 }
 
 function addRole() {
