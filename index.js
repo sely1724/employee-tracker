@@ -162,14 +162,15 @@ function next() {
 }
 
 function getDepartmentList() {
-  const deptName = db.query(
+  db.query(
     `select d.department_name from departments d`,
-    function (err, results) {
-      console.log(results);
+    //fields comes from https://www.w3schools.com/nodejs/nodejs_mysql_select.asp
+    function (err, results, fields) {
+      for (i = 0; i < results.length; i++) {
+        console.log(results[i].department_name);
+      }
     }
   );
-
-  console.log(deptName);
 }
 
 init();
