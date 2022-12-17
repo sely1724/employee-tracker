@@ -95,7 +95,7 @@ function addDepartment() {
     });
 }
 
-function addRole() {
+async function addRole() {
   inquirer
     .prompt([
       {
@@ -113,7 +113,11 @@ function addRole() {
         type: "list",
         name: "deptNameFK",
         message: "What department is the role in?",
-        choices: getDepartmentList(),
+        choices: await getDepartmentList(),
+        when(answers) {
+          return answers[0];
+          //  return answers.task === 'View a Department Budget';
+        },
       },
     ])
     .then((response) => {
@@ -161,7 +165,7 @@ function next() {
     });
 }
 
-function getDepartmentList() {
+async function getDepartmentList() {
   let deptRoles = [];
   db.query(
     `select d.department_name from departments d`,
