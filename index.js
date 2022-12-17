@@ -96,7 +96,42 @@ function addDepartment() {
 }
 
 function addRole() {
-  next();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Please add the title of the role",
+        name: "addRoleTitle",
+      },
+      {
+        type: "input",
+        message: "Please add the role's salary",
+        name: "addRoleSalary",
+      },
+
+      {
+        type: "list",
+        name: "deptNameFK",
+        message: "What department is the role in?",
+        choices: getDepartmentList(),
+      },
+    ])
+    .then((response) => {
+      //have to figure out how to retrieve the dept. id foreign key.
+      //const
+
+      const query = `INSERT INTO roles (title,salary) VALUES (?);`;
+      //https://www.geeksforgeeks.org/node-js-mysql-insert-into-table/
+      db.query(query, response.addDepartmentName, (err, response) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Ok");
+        }
+      });
+
+      next();
+    });
 }
 
 function addEmployee() {
@@ -124,6 +159,17 @@ function next() {
         //end
       }
     });
+}
+
+function getDepartmentList() {
+  const deptName = db.query(
+    `select d.department_name from departments d`,
+    function (err, results) {
+      console.log(results);
+    }
+  );
+
+  console.log(deptName);
 }
 
 init();
