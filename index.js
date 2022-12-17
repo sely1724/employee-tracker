@@ -1,6 +1,32 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
-const { nextTick } = require("process");
+const cTable = require("console.table");
+const mysql = require("mysql2");
+//const schema = require("./db/schema.sql");
+
+//connection pool example from https://www.npmjs.com/package/mysql2?activeTab=readme
+// const pool = mysql.createPool({
+//     host: 'localhost',
+//     user: 'root',
+//     database: 'test',
+//     waitForConnections: true,
+//     connectionLimit: 10,
+//     queueLimit: 0
+//   });
+
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    user: "root",
+    password: "wZ(k3TmrlOWEForpDiQ[",
+    database: "employee_management_system",
+  }
+  //console.log(`Connected to the ${db.database} database.`)
+);
+
+// db.query(`select * from departments`, function (err, results) {
+//   console.log(results);
+// });
 
 //initialize project.  Asks user questions in the terminal
 function init() {
@@ -41,6 +67,9 @@ function init() {
 }
 
 function viewDepartments() {
+  db.query("select * from departments", function (err, results) {
+    console.log(results);
+  });
   next();
 }
 
