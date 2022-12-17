@@ -162,13 +162,16 @@ function next() {
 }
 
 function getDepartmentList() {
+  let deptRoles = [];
   db.query(
     `select d.department_name from departments d`,
-    //fields comes from https://www.w3schools.com/nodejs/nodejs_mysql_select.asp
+    // "fields" comes from https://www.w3schools.com/nodejs/nodejs_mysql_select.asp
     function (err, results, fields) {
       for (i = 0; i < results.length; i++) {
-        console.log(results[i].department_name);
+        deptRoles.push(results[i].department_name);
       }
+      console.log(deptRoles);
+      return deptRoles;
     }
   );
 }
