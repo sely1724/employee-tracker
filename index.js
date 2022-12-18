@@ -221,7 +221,8 @@ async function updateEmployeeRole() {
     .then(async (answers) => {
       let employeeToUpdate = answers.updateEmployeeChoice;
       let empToUpdateID = await getManagerID(employeeToUpdate);
-      //call update role(employeeToUpdateID)
+      //let empRoleToUpdate = roleUpdate(empToUpdateID);
+      updateRole(empToUpdateID);
     });
 
   next();
@@ -365,7 +366,25 @@ async function getManagerID(managerChosen) {
   });
 }
 
-async function roleUpdate() {}
+async function updateRole(empToUpdateID) {
+  inquirer
+    .prompt([
+      {
+        name: "updateRoleChoice",
+        type: "list",
+        message: "What is the employee's new role?",
+        choices: await getEmpRoles(), // can I use same thing I used for manager??
+        //if so, need to figure out the null part.
+      },
+    ])
+    .then(async (answers) => {
+      let empNewRoleChoice = answers.updateRoleChoice;
+      let newRoleID = await getRoleID(empNewRoleChoice);
+      changeEmployeeRole(empToUpdateID, newRoleID);
+    });
+
+  next();
+}
 //comment for visibility
 //comment
 //comment
