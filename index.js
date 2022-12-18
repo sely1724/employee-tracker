@@ -115,7 +115,10 @@ async function addRole() {
         choices: await getDepartmentList(),
       },
     ])
-    .then((response) => {
+    .then(async (response) => {
+      const deptChosen = response.addRoleForeignKey;
+      const deptID = await getDepartmentID(deptChosen);
+      console.log(deptID);
       // FIND DEPT ID based on choice of department list.  response.addRoleForeignKey.
       // Once ID is found.
       // Enter data into roles table.
@@ -164,6 +167,21 @@ async function getDepartmentList() {
           deptRoles.push(results[i].department_name);
         }
         resolve(deptRoles);
+      }
+    );
+  });
+}
+
+async function getDepartmentID(deptChosen) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `select d.id from departments d where d.department_name = "${deptChosen}"`,
+      function (err, results) {
+        if (err) {
+          reject(err);
+        } else {
+          console.log(results[0].id);
+        }
       }
     );
   });
