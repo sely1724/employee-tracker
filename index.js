@@ -167,7 +167,7 @@ async function addEmployee() {
       },
     ])
     .then(async (response) => {
-      console.log("Fin");
+      //console.log("Fin");
 
       // NEXT STEP GET EMPLOYEE ROLE ID
       // NEXT STEP IF MANAGER != NULL THEN GET MANAGER ID
@@ -187,19 +187,23 @@ async function addEmployee() {
           `${employeeManagerChosen}`,
         ];
       } else {
-        const managerID = await getManagerID(managerChosen);
+        const managerID = await getManagerID(employeeManagerChosen);
+        responseArray = [
+          `${response.addFName}`,
+          `${response.addLName}`,
+          `${empRoleID}`,
+          `${managerID}`,
+        ];
       }
       console.log(responseArray);
-      // NEED TO FIGURE OUT MANAGER ID NOW.
-
-      //   let query = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
-      //   db.query(query, responseArray, function (err, results) {
-      //     if (err) {
-      //       console.log(err);
-      //     } else {
-      //       console.log("Ok");
-      //     }
-      //   });
+      let query = `INSERT INTO employees (f_name, l_name, role_id, manager_id) VALUES (?,?,?,?)`;
+      db.query(query, responseArray, function (err, results) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Ok");
+        }
+      });
       next();
     });
 }
@@ -305,21 +309,30 @@ async function getEmployeeList() {
           reject(err);
         }
         for (i = 0; i < results.length; i++) {
-          firstNameArray.push(results[i].f_name);
-          lastNameArray.push(results[i].l_name);
+          //firstNameArray.push(results[i].f_name);
+          // lastNameArray.push(results[i].l_name);
           empList.push(results[i].l_name + ", " + results[i].f_name);
         }
         // CHECK FOR EMPTY MANAGER - https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
-        resolve(empList, firstNameArray, lastNameArray);
+        resolve(empList);
       }
     );
   });
 }
 
 async function getManagerID(managerChosen) {
+  // splitting reference: https://www.freecodecamp.org/news/javascript-split-how-to-split-a-string-into-an-array-in-js/
   return new Promise((resolve, reject) => {
+    let fullName = managerChosen;
+    let splitArray = fullName.split(", ");
+    console.log(splitArray);
+    let fName = splitArray[1];
+    let lName = splitArray[0];
+    console.log(fName);
+    console.log(lName);
+
     db.query(
-      `select emp.id from employees emp where emp.f_name like "${managerChosen}"`,
+      `select emp.id from employees emp where emp.f_name = "${fName}" and emp.l_name = "${lName}" `,
       function (err, results) {
         if (err) {
           reject(err);
