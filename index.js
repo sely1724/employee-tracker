@@ -184,7 +184,7 @@ async function addEmployee() {
           `${response.addFName}`,
           `${response.addLName}`,
           `${empRoleID}`,
-          `${employeeManagerChosen}`,
+          null,
         ];
       } else {
         const managerID = await getManagerID(employeeManagerChosen);
@@ -298,8 +298,8 @@ async function getRoleID(empRoleChosen) {
 
 async function getEmployeeList() {
   let empList = [];
-  let firstNameArray = [];
-  let lastNameArray = [];
+  //let firstNameArray = [];
+  //let lastNameArray = [];
   empList.push("NULL");
   return new Promise((resolve, reject) => {
     db.query(
