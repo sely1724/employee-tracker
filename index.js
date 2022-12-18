@@ -58,14 +58,14 @@ function init() {
 
 function viewDepartments() {
   db.query(`select * from departments`, function (err, results) {
-    console.log(results);
+    console.table(results);
   });
   next();
 }
 
 function viewRoles() {
   db.query(`select * from roles`, function (err, results) {
-    console.log(results);
+    console.table(results);
   });
   next();
 }
