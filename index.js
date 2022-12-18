@@ -167,13 +167,6 @@ async function addEmployee() {
       },
     ])
     .then(async (response) => {
-      //console.log("Fin");
-
-      // NEXT STEP GET EMPLOYEE ROLE ID
-      // NEXT STEP IF MANAGER != NULL THEN GET MANAGER ID
-      // ELSE IF NULL USE THAT TO INSERT INTO SLOT
-      // INSERT INFORMATION INTO TABLE
-
       const empRoleChosen = response.addEmpRole;
       const empRoleID = await getRoleID(empRoleChosen);
       let responseArray = [];
@@ -208,7 +201,29 @@ async function addEmployee() {
     });
 }
 
-function updateEmployeeRole() {
+async function updateEmployeeRole() {
+  //so import employee role?
+  //select employee to update
+  //select their new role
+  //then this info is updated in the db
+  //updates role for a specific employee
+
+  inquirer
+    .prompt([
+      {
+        name: "updateEmployeeChoice",
+        type: "list",
+        message: "Which employee would you like to update:",
+        choices: await getEmployeeList(), // can I use same thing I used for manager??
+        //if so, need to figure out the null part.
+      },
+    ])
+    .then(async (answers) => {
+      let employeeToUpdate = answers.updateEmployeeChoice;
+      let empToUpdateID = await getManagerID(employeeToUpdate);
+      //call update role(employeeToUpdateID)
+    });
+
   next();
 }
 
@@ -345,4 +360,8 @@ async function getManagerID(managerChosen) {
   });
 }
 
+async function roleUpdate() {}
+//comment for visibility
+//comment
+//comment
 init();
