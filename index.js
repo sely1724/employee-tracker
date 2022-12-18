@@ -173,13 +173,25 @@ async function addEmployee() {
       // NEXT STEP IF MANAGER != NULL THEN GET MANAGER ID
       // ELSE IF NULL USE THAT TO INSERT INTO SLOT
       // INSERT INFORMATION INTO TABLE
-      //   const empRoleChosen = response.addEmpRole;
-      //   const empRoleID = await getRoleID(empRoleChosen);
-      //   let responseArray = [
-      //     `${response.addFName}`,
-      //     `${response.addLName}`,
-      //     `${empRoleID}`,
-      //   ];
+
+      const empRoleChosen = response.addEmpRole;
+      const empRoleID = await getRoleID(empRoleChosen);
+      let responseArray = [];
+      const employeeManagerChosen = response.addManager;
+
+      if (employeeManagerChosen == "NULL") {
+        responseArray = [
+          `${response.addFName}`,
+          `${response.addLName}`,
+          `${empRoleID}`,
+          `${employeeManagerChosen}`,
+        ];
+      } else {
+        const managerID = await getManagerID(managerChosen);
+      }
+      console.log(responseArray);
+      // NEED TO FIGURE OUT MANAGER ID NOW.
+
       //   let query = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
       //   db.query(query, responseArray, function (err, results) {
       //     if (err) {
@@ -282,6 +294,8 @@ async function getRoleID(empRoleChosen) {
 
 async function getEmployeeList() {
   let empList = [];
+  let firstNameArray = [];
+  let lastNameArray = [];
   empList.push("NULL");
   return new Promise((resolve, reject) => {
     db.query(
@@ -291,19 +305,21 @@ async function getEmployeeList() {
           reject(err);
         }
         for (i = 0; i < results.length; i++) {
+          firstNameArray.push(results[i].f_name);
+          lastNameArray.push(results[i].l_name);
           empList.push(results[i].l_name + ", " + results[i].f_name);
         }
         // CHECK FOR EMPTY MANAGER - https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
-        resolve(empList);
+        resolve(empList, firstNameArray, lastNameArray);
       }
     );
   });
 }
 
-async function getRoleID(empRoleChosen) {
+async function getManagerID(managerChosen) {
   return new Promise((resolve, reject) => {
     db.query(
-      `select r.id from roles r where r.title = "${empRoleChosen}"`,
+      `select emp.id from employees emp where emp.f_name like "${managerChosen}"`,
       function (err, results) {
         if (err) {
           reject(err);
