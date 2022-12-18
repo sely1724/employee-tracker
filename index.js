@@ -82,9 +82,9 @@ function addDepartment() {
       },
     ])
     .then((response) => {
-      const query = `INSERT INTO departments (department_name) VALUES (?);`;
+      let query = `INSERT INTO departments (department_name) VALUES (?);`;
       //https://www.geeksforgeeks.org/node-js-mysql-insert-into-table/
-      db.query(query, response.addDepartmentName, (err, response) => {
+      db.query(query, response.addDepartmentName, (err, results) => {
         if (err) {
           console.log(err);
         } else {
@@ -104,7 +104,7 @@ async function addRole() {
         name: "addRoleTitle",
       },
       {
-        type: "input",
+        type: "number",
         message: "Please add the role's salary",
         name: "addRoleSalary",
       },
@@ -118,11 +118,19 @@ async function addRole() {
     .then(async (response) => {
       const deptChosen = response.addRoleForeignKey;
       const deptID = await getDepartmentID(deptChosen);
-      console.log(deptID);
-      // FIND DEPT ID based on choice of department list.  response.addRoleForeignKey.
-      // Once ID is found.
-      // Enter data into roles table.
-
+      let responseArray = [
+        `${response.addRoleTitle}`,
+        `${response.addRoleSalary}`,
+        `${deptID}`,
+      ];
+      let query = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
+      db.query(query, responseArray, function (err, results) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Ok");
+        }
+      });
       next();
     });
 }
@@ -180,7 +188,8 @@ async function getDepartmentID(deptChosen) {
         if (err) {
           reject(err);
         } else {
-          console.log(results[0].id);
+          //console.log(results[0].id);
+          resolve(results[0].id);
         }
       }
     );
