@@ -34,14 +34,19 @@ function init() {
     ])
     .then((response) => {
       if (response.task === "view all departments") {
+        //done
         viewDepartments();
       } else if (response.task === "view all roles") {
+        //done
         viewRoles();
       } else if (response.task === "view all employees") {
+        //done
         viewEmployees();
       } else if (response.task === "add a department") {
+        //done
         addDepartment();
       } else if (response.task === "add a role") {
+        //done
         addRole();
       } else if (response.task === "add an employee") {
         addEmployee();
@@ -135,8 +140,50 @@ async function addRole() {
     });
 }
 
-function addEmployee() {
-  next();
+async function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Please add the employee's first name",
+        name: "addFName",
+      },
+      {
+        type: "input",
+        message: "Please add the employee's last name",
+        name: "addLName",
+      },
+      {
+        type: "list",
+        message: "What is the employee's role?",
+        name: "addEmpRole",
+        choices: await getEmpRoles(),
+      },
+      {
+        type: "list",
+        message: "Who is the employee's manager?",
+        name: "addManager",
+        choices: await getEmployeeList(),
+      },
+    ])
+    .then(async (response) => {
+      const empRoleChosen = response.addEmpRole;
+      const empRoleID = await getRoleID(empRoleChosen);
+      let responseArray = [
+        `${response.addFName}`,
+        `${response.addLName}`,
+        `${empRoleID}`,
+      ];
+      let query = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
+      db.query(query, responseArray, function (err, results) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Ok");
+        }
+      });
+      next();
+    });
 }
 
 function updateEmployeeRole() {
@@ -184,6 +231,76 @@ async function getDepartmentID(deptChosen) {
   return new Promise((resolve, reject) => {
     db.query(
       `select d.id from departments d where d.department_name = "${deptChosen}"`,
+      function (err, results) {
+        if (err) {
+          reject(err);
+        } else {
+          //console.log(results[0].id);
+          resolve(results[0].id);
+        }
+      }
+    );
+  });
+}
+
+async function getEmpRoles() {
+  let empRoles = [];
+  return new Promise((resolve, reject) => {
+    db.query(`select r.title from roles r`, function (err, results) {
+      if (err) {
+        reject(err);
+      }
+      for (i = 0; i < results.length; i++) {
+        empRoles.push(results[i].title);
+      }
+      resolve(empRoles);
+    });
+  });
+}
+
+async function getRoleID(empRoleChosen) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `select r.id from roles r where r.title = "${empRoleChosen}"`,
+      function (err, results) {
+        if (err) {
+          reject(err);
+        } else {
+          //console.log(results[0].id);
+          resolve(results[0].id);
+        }
+      }
+    );
+  });
+}
+
+async function getEmployeeList() {
+  let empList = [];
+  return new Promise((resolve, reject) => {
+    db.query(
+      `select emp.f_name, emp.l_name from employees emp`,
+      function (err, results) {
+        if (err) {
+          reject(err);
+        }
+        for (i = 0; i < results.length; i++) {
+          empList.push(results[i].l_name + ", " + results[i].f_name);
+        }
+        // CHECK FOR EMPTY MANAGER - https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
+        if (!empList.isArray(empList) || !empList.length) {
+          resolve("No available manager");
+        } else {
+          resolve(empList);
+        }
+      }
+    );
+  });
+}
+
+async function getRoleID(empRoleChosen) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `select r.id from roles r where r.title = "${empRoleChosen}"`,
       function (err, results) {
         if (err) {
           reject(err);
