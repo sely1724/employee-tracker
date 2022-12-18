@@ -385,7 +385,20 @@ async function updateRole(empToUpdateID) {
 
   next();
 }
-//comment for visibility
-//comment
-//comment
+
+async function changeEmployeeRole(empToUpdateID, newRoleID) {
+  db.query(
+    "UPDATE employee SET role_id = ? WHERE id = ?",
+    [newRoleID, empToUpdateID],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Role updated");
+        console.log(results);
+      }
+    }
+  );
+}
+
 init();
