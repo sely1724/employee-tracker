@@ -168,6 +168,11 @@ async function addEmployee() {
     ])
     .then(async (response) => {
       console.log("Fin");
+
+      // NEXT STEP GET EMPLOYEE ROLE ID
+      // NEXT STEP IF MANAGER != NULL THEN GET MANAGER ID
+      // ELSE IF NULL USE THAT TO INSERT INTO SLOT
+      // INSERT INFORMATION INTO TABLE
       //   const empRoleChosen = response.addEmpRole;
       //   const empRoleID = await getRoleID(empRoleChosen);
       //   let responseArray = [
