@@ -315,7 +315,7 @@ async function getEmployeeList() {
   let empList = [];
   //let firstNameArray = [];
   //let lastNameArray = [];
-  empList.push("NULL");
+  //empList.push("NULL");
   return new Promise((resolve, reject) => {
     db.query(
       `select emp.f_name, emp.l_name from employees emp`,
@@ -328,8 +328,13 @@ async function getEmployeeList() {
           // lastNameArray.push(results[i].l_name);
           empList.push(results[i].l_name + ", " + results[i].f_name);
         }
-        // CHECK FOR EMPTY MANAGER - https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
-        resolve(empList);
+
+        if (empList.length >= 1) {
+          // CHECK FOR EMPTY MANAGER - https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
+          resolve(empList);
+        } else {
+          resolve("NULL");
+        }
       }
     );
   });
