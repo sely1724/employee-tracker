@@ -58,21 +58,27 @@ function init() {
 
 function viewDepartments() {
   db.query(`select * from departments`, function (err, results) {
+    console.log("\n");
     console.table(results);
+    console.log("\n");
   });
   next();
 }
 
 function viewRoles() {
   db.query(`select * from roles`, function (err, results) {
+    console.log("\n");
     console.table(results);
+    console.log("\n");
   });
   next();
 }
 
 function viewEmployees() {
   db.query(`select * from employees`, function (err, results) {
-    console.log(results);
+    console.log("\n");
+    console.table(results);
+    console.log("\n");
   });
   next();
 }
@@ -242,7 +248,7 @@ function next() {
       if (response.task === "start new task") {
         init();
       } else {
-        //end
+        process.exit();
       }
     });
 }
