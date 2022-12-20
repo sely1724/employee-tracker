@@ -394,7 +394,8 @@ async function changeEmployeeRole(empToUpdateID, newRoleID) {
         console.log(err);
       } else {
         console.log("Role updated");
-        //console.log(results);
+        //
+        console.log(results);
       }
     }
   );
