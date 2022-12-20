@@ -230,7 +230,7 @@ async function updateEmployeeRole() {
       updateRole(empToUpdateID);
     });
 
-  next();
+  //next();
 }
 
 function next() {
@@ -379,25 +379,26 @@ async function updateRole(empToUpdateID) {
     .then(async (answers) => {
       let empNewRoleChoice = answers.updateRoleChoice;
       let newRoleID = await getRoleID(empNewRoleChoice);
-      changeEmployeeRole(empToUpdateID, newRoleID);
+      await changeEmployeeRole(empToUpdateID, newRoleID);
     });
 
-  next();
+  //next();
 }
 
 async function changeEmployeeRole(empToUpdateID, newRoleID) {
   db.query(
-    "UPDATE employee SET role_id = ? WHERE id = ?",
+    "UPDATE employees SET role_id = ? WHERE id = ?",
     [newRoleID, empToUpdateID],
     (err, results) => {
       if (err) {
         console.log(err);
       } else {
         console.log("Role updated");
-        console.log(results);
+        //console.log(results);
       }
     }
   );
+  next();
 }
 
 init();
