@@ -1,17 +1,16 @@
+// requirements
 const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const mysql = require("mysql2");
 
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    user: "root",
-    password: "wZ(k3TmrlOWEForpDiQ[",
-    database: "employee_management_system",
-  }
-  //console.log(`Connected to the employee_management_system database.`)
-);
+//connect to sql
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "wZ(k3TmrlOWEForpDiQ[",
+  database: "employee_management_system",
+});
 
 //initialize project.  Asks user questions in the terminal
 function init() {
@@ -34,19 +33,14 @@ function init() {
     ])
     .then((response) => {
       if (response.task === "view all departments") {
-        //done
         viewDepartments();
       } else if (response.task === "view all roles") {
-        //done
         viewRoles();
       } else if (response.task === "view all employees") {
-        //done
         viewEmployees();
       } else if (response.task === "add a department") {
-        //done
         addDepartment();
       } else if (response.task === "add a role") {
-        //done
         addRole();
       } else if (response.task === "add an employee") {
         addEmployee();
@@ -56,6 +50,7 @@ function init() {
     });
 }
 
+// shows user all of the organization's departments
 function viewDepartments() {
   db.query(`select * from departments`, function (err, results) {
     console.log("\n");
@@ -64,7 +59,7 @@ function viewDepartments() {
   });
   next();
 }
-
+// shows user all of the roles at the organization (including which dept the role is in)
 function viewRoles() {
   db.query(`select * from roles`, function (err, results) {
     console.log("\n");
@@ -74,6 +69,7 @@ function viewRoles() {
   next();
 }
 
+// shows user all the employee information (including the employee's role and who their manager is)
 function viewEmployees() {
   db.query(`select * from employees`, function (err, results) {
     console.log("\n");
@@ -83,6 +79,7 @@ function viewEmployees() {
   next();
 }
 
+// enables user to add a department to the organization
 function addDepartment() {
   inquirer
     .prompt([
@@ -106,6 +103,7 @@ function addDepartment() {
     });
 }
 
+// enables user to add a role to the organization
 async function addRole() {
   inquirer
     .prompt([
@@ -123,11 +121,13 @@ async function addRole() {
         type: "list",
         message: "To which Department does the role belong?",
         name: "addRoleForeignKey",
+        // asynchronous function to grab list of organization's current departments
         choices: await getDepartmentList(),
       },
     ])
     .then(async (response) => {
       const deptChosen = response.addRoleForeignKey;
+      // asynchronous function that uses selected department name to grab the dept's ID.
       const deptID = await getDepartmentID(deptChosen);
       let responseArray = [
         `${response.addRoleTitle}`,
@@ -145,7 +145,7 @@ async function addRole() {
       next();
     });
 }
-
+// allows users to add an employee
 async function addEmployee() {
   inquirer
     .prompt([
@@ -163,21 +163,24 @@ async function addEmployee() {
         type: "list",
         message: "What is the employee's role?",
         name: "addEmpRole",
+        // asynchronous function to grab list of current roles at the organization
         choices: await getEmpRoles(),
       },
       {
         type: "list",
         message: "Who is the employee's manager?",
         name: "addManager",
+        // asynchronous function to grab list of employees at the organizaion.  IF there are 0 employees entered, choices displays NULL
         choices: await getEmployeeList(),
       },
     ])
     .then(async (response) => {
       const empRoleChosen = response.addEmpRole;
+      // asynchronouse function to grab the ID of the role chosen based on the name.
       const empRoleID = await getRoleID(empRoleChosen);
       let responseArray = [];
       const employeeManagerChosen = response.addManager;
-
+      // if statement in case manager was set to NULL
       if (employeeManagerChosen == "NULL") {
         responseArray = [
           `${response.addFName}`,
@@ -185,6 +188,7 @@ async function addEmployee() {
           `${empRoleID}`,
           null,
         ];
+        // continued if statement - if user assigned a current employee to be new employee's manager, asynchronous function is called to grab that employee's ID
       } else {
         const managerID = await getManagerID(employeeManagerChosen);
         responseArray = [
@@ -206,28 +210,23 @@ async function addEmployee() {
       next();
     });
 }
-
+// allows user to update employee's current position
 async function updateEmployeeRole() {
-  //so import employee role?
-  //select employee to update
-  //select their new role
-  //then this info is updated in the db
-  //updates role for a specific employee
-
   inquirer
     .prompt([
       {
         name: "updateEmployeeChoice",
         type: "list",
         message: "Which employee would you like to update:",
-        choices: await getEmployeeList(), // can I use same thing I used for manager??
-        //if so, need to figure out the null part.
+        // grabs list of employee's
+        choices: await getEmployeeList(),
       },
     ])
     .then(async (answers) => {
       let employeeToUpdate = answers.updateEmployeeChoice;
+      // asynchronous function to grab employee you want to updates ID.  Need to rename function because it's not just used in the manager case anymore.
       let empToUpdateID = await getManagerID(employeeToUpdate);
-      //let empRoleToUpdate = roleUpdate(empToUpdateID);
+      // function called to update Employee's role.  Their Employee ID is passed through.
       updateRole(empToUpdateID);
     });
 
@@ -248,6 +247,7 @@ function next() {
       if (response.task === "start new task") {
         init();
       } else {
+        // way to exit from inquirer
         process.exit();
       }
     });
@@ -320,9 +320,6 @@ async function getRoleID(empRoleChosen) {
 
 async function getEmployeeList() {
   let empList = [];
-  //let firstNameArray = [];
-  //let lastNameArray = [];
-  //empList.push("NULL");
   return new Promise((resolve, reject) => {
     db.query(
       `select emp.f_name, emp.l_name from employees emp`,
@@ -331,8 +328,6 @@ async function getEmployeeList() {
           reject(err);
         }
         for (i = 0; i < results.length; i++) {
-          //firstNameArray.push(results[i].f_name);
-          // lastNameArray.push(results[i].l_name);
           empList.push(results[i].l_name + ", " + results[i].f_name);
         }
 
@@ -364,7 +359,6 @@ async function getManagerID(managerChosen) {
         if (err) {
           reject(err);
         } else {
-          //console.log(results[0].id);
           resolve(results[0].id);
         }
       }
@@ -379,8 +373,7 @@ async function updateRole(empToUpdateID) {
         name: "updateRoleChoice",
         type: "list",
         message: "What is the employee's new role?",
-        choices: await getEmpRoles(), // can I use same thing I used for manager??
-        //if so, need to figure out the null part.
+        choices: await getEmpRoles(),
       },
     ])
     .then(async (answers) => {
